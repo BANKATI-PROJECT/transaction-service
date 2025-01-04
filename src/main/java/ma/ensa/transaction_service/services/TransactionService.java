@@ -3,10 +3,14 @@ package ma.ensa.transaction_service.services;
 import ma.ensa.transaction_service.entities.Transaction;
 import ma.ensa.transaction_service.enums.TransactionStatus;
 import ma.ensa.transaction_service.enums.TransactionType;
+import ma.ensa.transaction_service.feign.AccountManagementClientFeign;
 import ma.ensa.transaction_service.feign.PortefeuilleClientFeign;
+import ma.ensa.transaction_service.model.Client;
 import ma.ensa.transaction_service.model.Portefeuille;
 import ma.ensa.transaction_service.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,12 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     @Autowired
     private PortefeuilleClientFeign portefeuilleClientFeign;
+    @Value("${topic.transaction}")
+    private String transactionTopic;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private AccountManagementClientFeign accountManagementClientFeign;
 
 
 
@@ -43,6 +53,9 @@ public class TransactionService {
         portefeuilleClientFeign.updatePortefeuille(fromPortefeuilleId, fromPortefeuille);
         portefeuilleClientFeign.updatePortefeuille(toPortefeuilleId, toPortefeuille);
 
+        Client fromClient = accountManagementClientFeign.getClientById(fromPortefeuille.getClientId());
+        Client toClient = accountManagementClientFeign.getClientById(toPortefeuille.getClientId());
+
         // Sauvegarder la transaction
         Transaction transaction = new Transaction();
         transaction.setFromPortefeuilleId(fromPortefeuilleId);
@@ -51,6 +64,21 @@ public class TransactionService {
         transaction.setTimestamp(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.TRANSFER);
+
+        // Publier l'événement dans Kafka avec les emails
+        String eventFrom = String.format(
+                "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été débité de %.2f. Nouveau solde: %.2f\"}",
+                fromClient.getId(), fromClient.getEmail(), amount, fromPortefeuille.getSolde()
+        );
+
+        String eventTo = String.format(
+                "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été crédité de %.2f. Nouveau solde: %.2f\"}",
+                toClient.getId(), toClient.getEmail(), amount, toPortefeuille.getSolde()
+        );
+
+        // Envoi de l'événement dans Kafka
+        kafkaTemplate.send(transactionTopic, eventFrom);
+        kafkaTemplate.send(transactionTopic, eventTo);
 
         return transactionRepository.save(transaction);
     }

@@ -7,6 +7,16 @@ public class Portefeuille {
     private Double solde;
     private Double plafond;
     private String currency;
+    private Long clientId;
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
+
     private List<VirtuelCard> virtuelCards;
 
     public Long getId() {
