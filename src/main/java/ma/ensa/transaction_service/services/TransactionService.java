@@ -82,5 +82,57 @@ public class TransactionService {
 
         return transactionRepository.save(transaction);
     }
+
+    public Transaction createFactureTransaction(Long fromPortefeuilleId,Double amount){
+        // Vérification des portefeuilles
+        Portefeuille fromPortefeuille = portefeuilleClientFeign.getPortefeuille(fromPortefeuilleId);
+
+        if (fromPortefeuille == null) {
+            throw new IllegalArgumentException("One or both portefeuilles not found");
+        }
+
+        // Vérification du solde
+        if (fromPortefeuille.getSolde() < amount) {
+            throw new IllegalStateException("Insufficient balance in the source portefeuille");
+        }
+
+        fromPortefeuille.setSolde(fromPortefeuille.getSolde() - amount);
+
+        portefeuilleClientFeign.updatePortefeuille(fromPortefeuilleId, fromPortefeuille);
+
+        // Client fromClient = accountManagementClientFeign.getClientById(fromPortefeuille.getClientId());
+
+        Transaction transaction = new Transaction();
+        transaction.setFromPortefeuilleId(fromPortefeuilleId);
+        transaction.setToPortefeuilleId(null);
+        transaction.setAmount(amount);
+        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setStatus(TransactionStatus.PENDING);
+        transaction.setType(TransactionType.DEPOSIT);
+        // String eventFrom = String.format(
+        //         "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été débité de %.2f. Nouveau solde: %.2f\"}",
+        //         fromClient.getId(), fromClient.getEmail(), amount, fromPortefeuille.getSolde()
+        // );
+        // kafkaTemplate.send(transactionTopic, eventFrom);
+        return transactionRepository.save(transaction);
+    }
+    public Transaction completeFactureTransaction(Long transactionId){
+        
+        // Client fromClient = accountManagementClientFeign.getClientById(fromPortefeuille.getClientId());
+
+        Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
+
+        if(transaction==null){
+            throw new IllegalArgumentException("One or both portefeuilles not found");
+        }
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        // String eventFrom = String.format(
+        //         "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été débité de %.2f. Nouveau solde: %.2f\"}",
+        //         fromClient.getId(), fromClient.getEmail(), amount, fromPortefeuille.getSolde()
+        // );
+        // kafkaTemplate.send(transactionTopic, eventFrom);
+        return transactionRepository.save(transaction);
+    }
+
 }
 
