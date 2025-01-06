@@ -86,7 +86,6 @@ public class TransactionService {
 
         kafkaTemplate.send(transactionTopic, eventFrom);
         kafkaTemplate.send(transactionTopic, eventTo);
-
         return transactionRepository.save(transaction);
     }
 
