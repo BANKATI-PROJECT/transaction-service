@@ -2,9 +2,17 @@ package ma.ensa.transaction_service.dtos;
 
 public class DepositRequest {
     private Long clientId;
-    private String saveToken;
-    private String numCard;
     private Double amount;
+    
+    private Double solde;
+
+    public Double getSolde() {
+        return solde;
+    }
+
+    public void setSolde(Double solde) {
+        this.solde = solde;
+    }
 
     public Long getClientId() {
         return clientId;
@@ -12,22 +20,6 @@ public class DepositRequest {
 
     public void setClientId(Long clientId) {
         this.clientId = clientId;
-    }
-
-    public String getSaveToken() {
-        return saveToken;
-    }
-
-    public void setSaveToken(String saveToken) {
-        this.saveToken = saveToken;
-    }
-
-    public String getNumCard() {
-        return numCard;
-    }
-
-    public void setNumCard(String numCard) {
-        this.numCard = numCard;
     }
 
     public Double getAmount() {

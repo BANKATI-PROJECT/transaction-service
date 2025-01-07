@@ -5,11 +5,9 @@ import ma.ensa.transaction_service.entities.Transaction;
 import ma.ensa.transaction_service.enums.TransactionStatus;
 import ma.ensa.transaction_service.enums.TransactionType;
 import ma.ensa.transaction_service.feign.AccountManagementClientFeign;
-import ma.ensa.transaction_service.feign.CmiClientFeign;
 import ma.ensa.transaction_service.feign.PortefeuilleClientFeign;
 import ma.ensa.transaction_service.model.Client;
 import ma.ensa.transaction_service.model.Portefeuille;
-import ma.ensa.transaction_service.model.RealCardCMI;
 import ma.ensa.transaction_service.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +32,6 @@ public class TransactionService {
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private AccountManagementClientFeign accountManagementClientFeign;
-    @Autowired
-    private CmiClientFeign cmiClientFeign;
 
 
 
@@ -142,24 +138,24 @@ public class TransactionService {
 
     public void depositToPortefeuille(DepositRequest request) {
 
-        Portefeuille portefeuille = portefeuilleClientFeign.getPortefeuille(request.getClientId());
-        if (portefeuille == null) {
-            throw new IllegalArgumentException("Portefeuille introuvable");
-        }
+        // Portefeuille portefeuille = portefeuilleClientFeign.getPortefeuille(request.getClientId());
+        // if (portefeuille == null) {
+        //     throw new IllegalArgumentException("Portefeuille introuvable");
+        // }
         Client client = accountManagementClientFeign.getClientById(request.getClientId());
 
-        RealCardCMI card = cmiClientFeign.getCardBySaveTokenAndNumber(request.getSaveToken(), request.getNumCard());
-        if (card == null || card.getSolde() < request.getAmount()) {
-            throw new IllegalArgumentException("Carte invalide ou solde insuffisant");
-        }
+        // RealCardCMI card = cmiClientFeign.getCardBySaveTokenAndNumber(request.getSaveToken(), request.getNumCard());
+        // if (card == null || card.getSolde() < request.getAmount()) {
+        //     throw new IllegalArgumentException("Carte invalide ou solde insuffisant");
+        // }
 
 
-        card.setSolde(card.getSolde() - request.getAmount());
-        cmiClientFeign.updateCard(card);
+        // card.setSolde(card.getSolde() - request.getAmount());
+        // cmiClientFeign.updateCard(card);
 
 
-        portefeuille.setSolde(portefeuille.getSolde() + request.getAmount());
-        portefeuilleClientFeign.updatePortefeuille(portefeuille.getId(), portefeuille);
+        // portefeuille.setSolde(portefeuille.getSolde() + request.getAmount());
+        // portefeuilleClientFeign.updatePortefeuille(portefeuille.getId(), portefeuille);
 
 
         Transaction transaction = new Transaction();
@@ -171,19 +167,19 @@ public class TransactionService {
 
         String message = String.format(
                 "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été crédité de %.2f. Nouveau solde: %.2f\"}",
-                request.getClientId(), client.getEmail(), request.getAmount(), portefeuille.getSolde()
+                request.getClientId(), client.getEmail(), request.getAmount(), request.getSolde()
         );
         kafkaTemplate.send(transactionTopicDeposit, message);
     }
 
 
-    public RealCardCMI getCardDetails(String saveToken, String numCard) {
-        // Appel du service cmi-service pour récupérer les détails de la carte
-        RealCardCMI card = cmiClientFeign.getCardBySaveTokenAndNumber(saveToken, numCard);
-        if (card == null) {
-            throw new IllegalArgumentException("Carte non trouvée");
-        }
-        return card;
-    }
+    // public RealCardCMI getCardDetails(String saveToken, String numCard) {
+    //     // Appel du service cmi-service pour récupérer les détails de la carte
+    //     RealCardCMI card = cmiClientFeign.getCardBySaveTokenAndNumber(saveToken, numCard);
+    //     if (card == null) {
+    //         throw new IllegalArgumentException("Carte non trouvée");
+    //     }
+    //     return card;
+    // }
 }
 

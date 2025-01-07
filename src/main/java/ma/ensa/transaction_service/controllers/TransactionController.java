@@ -79,10 +79,10 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/card/{saveToken}/{numCard}")
-    public RealCardCMI getCard(@PathVariable("saveToken") String saveToken,
-                               @PathVariable("numCard") String numCard) {
-        // Appel du service transaction pour obtenir les détails de la carte
-        return transactionService.getCardDetails(saveToken, numCard);
-    }
+    // @GetMapping("/card/{saveToken}/{numCard}")
+    // public RealCardCMI getCard(@PathVariable("saveToken") String saveToken,
+    //                            @PathVariable("numCard") String numCard) {
+    //     // Appel du service transaction pour obtenir les détails de la carte
+    //     return transactionService.getCardDetails(saveToken, numCard);
+    // }
 }
