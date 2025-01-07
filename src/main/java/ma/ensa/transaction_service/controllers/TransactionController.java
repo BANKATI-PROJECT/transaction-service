@@ -5,6 +5,7 @@ import ma.ensa.transaction_service.entities.Transaction;
 import ma.ensa.transaction_service.model.RealCardCMI;
 import ma.ensa.transaction_service.services.TransactionService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,11 +26,12 @@ import org.springframework.web.client.RestTemplate;
 public class TransactionController {
 
     private final TransactionService transactionService;
-    private final RestTemplate restTemplate;
+    // @Autowired
+    // private RestTemplate restTemplate;
 
-    public TransactionController(TransactionService transactionService,RestTemplate restTemplate) {
+    public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
-        this.restTemplate = restTemplate;
+        // this.restTemplate = restTemplate;
     }
 
     @PostMapping("/transfer")
@@ -57,6 +59,7 @@ public class TransactionController {
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
 
         try {
+            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.postForEntity(remoteServerUrl, entity, String.class);
             if(response.getStatusCode() == HttpStatusCode.valueOf(200)){
                 transactionService.completeFactureTransaction(transaction.getId());

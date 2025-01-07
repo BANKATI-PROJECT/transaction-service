@@ -11,7 +11,7 @@ import ma.ensa.transaction_service.model.Portefeuille;
 import ma.ensa.transaction_service.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
+// import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +24,12 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     @Autowired
     private PortefeuilleClientFeign portefeuilleClientFeign;
-    @Value("${topic.transaction}")
-    private String transactionTopic;
-    @Value("${topic.transaction.deposit}")
-    private String transactionTopicDeposit;
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    // @Value("${topic.transaction}")
+    // private String transactionTopic;
+    // @Value("${topic.transaction.deposit}")
+    // private String transactionTopicDeposit;
+    // @Autowired
+    // private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private AccountManagementClientFeign accountManagementClientFeign;
 
@@ -80,8 +80,8 @@ public class TransactionService {
         );
 
 
-        kafkaTemplate.send(transactionTopic, eventFrom);
-        kafkaTemplate.send(transactionTopic, eventTo);
+        // kafkaTemplate.send(transactionTopic, eventFrom);
+        // kafkaTemplate.send(transactionTopic, eventTo);
         return transactionRepository.save(transaction);
     }
 
@@ -169,7 +169,7 @@ public class TransactionService {
                 "{\"clientId\": \"%s\", \"email\": \"%s\", \"message\": \"Votre portefeuille a été crédité de %.2f. Nouveau solde: %.2f\"}",
                 request.getClientId(), client.getEmail(), request.getAmount(), request.getSolde()
         );
-        kafkaTemplate.send(transactionTopicDeposit, message);
+        // kafkaTemplate.send(transactionTopicDeposit, message);
     }
 
 
