@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "portefeuille-service", url = "https://311c-105-73-96-213.ngrok-free.app")
+@FeignClient(name = "portefeuille-service")
 public interface PortefeuilleClientFeign {
     @GetMapping("/api/portefeuilles/{id}")
-    Portefeuille getPortefeuille(@PathVariable("id") Long id);
+    Portefeuille getPortefeuille(@PathVariable("id") String id);
 
     @PutMapping("/api/portefeuilles/{id}")
-    Portefeuille updatePortefeuille(@PathVariable("id") Long id, @RequestBody Portefeuille portefeuille);
+    Portefeuille updatePortefeuille(@PathVariable("id") String id, @RequestBody Portefeuille portefeuille);
 }

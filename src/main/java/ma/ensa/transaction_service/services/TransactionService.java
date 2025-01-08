@@ -35,7 +35,7 @@ public class TransactionService {
 
 
 
-    public Transaction executeTransfer(Long fromPortefeuilleId, Long toPortefeuilleId, Double amount) {
+    public Transaction executeTransfer(String fromPortefeuilleId, String toPortefeuilleId, Double amount) {
         // Vérification des portefeuilles
         Portefeuille fromPortefeuille = portefeuilleClientFeign.getPortefeuille(fromPortefeuilleId);
         Portefeuille toPortefeuille = portefeuilleClientFeign.getPortefeuille(toPortefeuilleId);
@@ -85,7 +85,7 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public Transaction createFactureTransaction(Long fromPortefeuilleId,Double amount){
+    public Transaction createFactureTransaction(String fromPortefeuilleId,Double amount){
         // Vérification des portefeuilles
         Portefeuille fromPortefeuille = portefeuilleClientFeign.getPortefeuille(fromPortefeuilleId);
 

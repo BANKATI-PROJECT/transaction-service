@@ -12,8 +12,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long fromPortefeuilleId;
-    private Long toPortefeuilleId;
+    private String fromPortefeuilleId;
+    private String toPortefeuilleId;
     private Double amount;
     private LocalDateTime timestamp;
 
@@ -31,19 +31,19 @@ public class Transaction {
         this.id = id;
     }
 
-    public Long getFromPortefeuilleId() {
+    public String getFromPortefeuilleId() {
         return fromPortefeuilleId;
     }
 
-    public void setFromPortefeuilleId(Long fromPortefeuilleId) {
+    public void setFromPortefeuilleId(String fromPortefeuilleId) {
         this.fromPortefeuilleId = fromPortefeuilleId;
     }
 
-    public Long getToPortefeuilleId() {
+    public String getToPortefeuilleId() {
         return toPortefeuilleId;
     }
 
-    public void setToPortefeuilleId(Long toPortefeuilleId) {
+    public void setToPortefeuilleId(String toPortefeuilleId) {
         this.toPortefeuilleId = toPortefeuilleId;
     }
 

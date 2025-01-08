@@ -35,8 +35,8 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<Transaction> transferFunds(@RequestParam Long fromPortefeuilleId,
-                                                     @RequestParam Long toPortefeuilleId,
+    public ResponseEntity<Transaction> transferFunds(@RequestParam String fromPortefeuilleId,
+                                                     @RequestParam String toPortefeuilleId,
                                                      @RequestParam Double amount) {
         Transaction transaction = transactionService.executeTransfer(fromPortefeuilleId, toPortefeuilleId, amount);
         return ResponseEntity.ok(transaction);
@@ -44,7 +44,7 @@ public class TransactionController {
 
     @PostMapping("/facture")
     public ResponseEntity<Transaction> createFactureTransaction(
-            @RequestParam Long fromPortefeuilleId,
+            @RequestParam String fromPortefeuilleId,
             @RequestParam Double amount,
             @RequestBody Object requestBody // Dynamically capture the request body
     ) {
